@@ -1,0 +1,13 @@
+#!/usr/bin/env python
+from urllib2 import urlopen, URLError
+ip = '0.0.0.0'
+try:
+    ip = urlopen('http://icanhazip.com').read()
+except URLError, e:
+    if e.reason.errno == -2:
+        # Name or service not known (no internet connection)
+        pass
+    else:
+        raise
+
+print("%s" % (ip.strip()))

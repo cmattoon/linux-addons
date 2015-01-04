@@ -1,0 +1,23 @@
+#!/usr/bin/env python
+r"""
+Displays a simple color chart for ascii color codes
+"""
+colors = ['black', 'red', 'green', 'orange', 'blue', 
+          'magenta', 'cyan', 'white', 'gray', 'gray']
+
+prefixes = {3: 'dark', 4: 'background', 9: 'light'}
+
+specials = {0: 'clear', 1: 'bold', 2: 'light', 4: 'underline', 7: 'invert', 8: 'hidden', 9: 'strikeout'}
+
+lines = [["%d%d - \033[%d%dm%s %s\033[0m" % (d,i, d,i, prefixes[d], colors[i])
+            for d in [3,4,9]] for i in range(10)]
+
+if __name__ == "__main__":
+    print(" " + "- ANSI Escape Color Chart -".center(80, '-'))
+
+    for line in lines:
+        print(" %s %s %s" % (line[0].ljust(35), line[1].ljust(35), line[2]))
+
+    print("")
+    for i in specials:
+        print(" 0%d - \033[0%dm%s\033[0m" % (i, i, specials[i]))
