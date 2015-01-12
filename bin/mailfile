@@ -1,0 +1,65 @@
+#!/bin/bash
+user="$(id -un)"
+host="$(hostname -f)"
+mutt=$(which mutt)
+if [ ! -f "$mutt" ]; then
+    echo " Cannot find mutt (Searched: '{$mutt}') "
+    echo " This currently relies on mutt. (sudo apt-get install -y mutt)"
+    exit 1;
+fi
+while getopts f:s:e:b: opt; do
+    case $opt in 
+	f)
+	    file="$OPTARG"
+	    ;;
+	s)
+	    subject="$OPTARG"
+	    ;;
+	e)
+	    email="$OPTARG"
+	    ;;
+	b)
+	    body="$OPTARG"
+	    ;;
+    esac
+done
+shift $((OPTIND - 1))
+
+function show_usage() {
+    echo " Emails a file"
+    echo " Usage: "
+    echo " ${0} -f <file> -e <email_address> [-b <body> -s <subject>]"
+    echo ""
+}
+
+if [ -z "$file" ]; then
+    echo -e "\033[91mYou must specify a file with -f\033[0m";
+    show_usage
+    exit 1;
+elif [ ! -f "$file" ]; then
+    echo -e "\033[91mCannot find file ${file}\033[0m";
+    show_usage
+    exit 1;
+fi
+
+if [ -z "$email" ]; then
+    echo -e "\033[91mSpecify an email address with -e\033[0m";
+    show_usage
+    exit 1;
+fi
+
+if [ -z "$body" ]; then
+    body="User ${user}@${host} has sent you a copy of ${file}";
+fi
+
+if [ -z "$subject" ]; then
+    subject="File from ${user}@${host}";
+fi
+echo " [+] Sending ${file} to ${email}"
+echo "$body" | $mutt -a "$file" -s "$subject" -- "$email"
+RES=$?
+if [ $RES -eq 0 ]; then
+    echo " [+] Mail sent!"
+else
+    echo " [!] Error $RES"
+fi
