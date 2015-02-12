@@ -1,0 +1,15 @@
+#!/bin/bash
+db=${1:?"Enter a database name"}
+user=${2:-"${db}user"}
+password=${3:-"${user}pass"}
+domain=${4:-"localhost"}
+
+q0="CREATE DATABASE ${db};"
+q1="CREATE USER '${user}'@'${domain}' IDENTIFIED BY '${password}';"
+q2="GRANT ALL PRIVILEGES ON ${db}.* TO '${user}'@'${domain}';"
+q3="FLUSH PRIVILEGES;"
+
+echo $q0
+echo $q1
+echo $q2
+echo $q3

@@ -1,3 +1,7 @@
 #!/bin/bash
-declare -r TRUE=0
-declare -r FALSE=1
+True() {
+    return 0;
+}
+False() {
+    return 1;
+}
