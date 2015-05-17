@@ -10,7 +10,8 @@ scripts = [
     'bin/ansi-colormap',
     'bin/icanhazip',
     'bin/wifipassword',
-    'bin/mint-post-install'
+    'bin/mint-post-install',
+    'bin/whoamiv'
     ]
 
 config = {

@@ -1,0 +1,22 @@
+#!/usr/bin/python
+"""
+A verbose `whoami`
+"""
+import getpass
+import os
+import requests
+import socket
+
+user = getpass.getuser()
+hostname = socket.gethostname()
+local_ip = socket.gethostbyname(hostname)
+try:
+    remote_ip = requests.get('http://icanhazip.com')
+    if remote_ip:
+        remote_ip = remote_ip.content.strip()
+except requests.exceptions.ConnectionError:
+    remote_ip = '(unknown)'
+
+print("%s@%s" % (user, hostname))
+print("Network (local) IP: %s" % local_ip)
+print("Remote (internet) IP: %s" % remote_ip)
