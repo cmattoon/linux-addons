@@ -12,6 +12,7 @@ scripts = [
     'bin/wifipassword',
     'bin/mint-post-install',
     'bin/whoamiv'
+    'bin/hostmgr'
     ]
 
 config = {
