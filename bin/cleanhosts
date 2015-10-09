@@ -1,0 +1,54 @@
+#!/usr/bin/env python
+"""
+
+"""
+import os
+
+class HostFile:
+    def __init__(self, fname=None):
+        if fname is None:
+            if os.name is 'posix':
+                fname = '/etc/hosts'
+
+        self.filename = fname
+        self.hosts = {}
+
+    def load(self):
+        hosts = {}
+        with open(self.filename, 'rb') as fd:
+            lines = [line.strip() for line in fd.readlines()]
+        parts = [line.split() for line in lines]
+        #parsed = {part[0]:part[1:] for part in parts if len(part) > 1}
+        for line in lines:
+            parts = line.split()
+
+            if len(parts) > 1:
+                try:
+                    ip = parts[0]
+                    if ip.startswith('#'):
+                        continue
+                    for part in parts[1:]:
+                        if part != ip:
+                            hosts[ip].add(part)
+                except KeyError:
+                    hosts[ip] = set(parts[1:])
+
+        self.hosts = hosts
+        return hosts
+
+    def save(self):
+        with open(self.filename, 'wb') as fd:
+            fd.writelines(["# This file managed by hostmgr%s"%os.linesep] +
+                          ["%s %s %s" % (str(ip), 
+                                         str(' '.join(sorted(set(self.hosts[ip])))),
+                                         str(os.linesep))
+                           for ip in sorted(self.hosts.keys())
+                           ])
+        return True
+
+if __name__ == '__main__':
+
+    h = HostFile()
+    h.load()
+    
+    h.save()
