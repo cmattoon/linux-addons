@@ -1,0 +1,67 @@
+#!/usr/bin/env python
+"""addignore
+Adds a standard .gitignore file to the directory specified by sys.argv[1]
+Optionally, you can name a template file as the second arg. 
+
+Usage:
+    addignore <target_directory> [<path-to-template>]
+
+    addignore ./new-repository ~/Templates/gitignore
+
+GitHub:
+    https://github.com/cmattoon/linux-addons/blob/master/bin/addignore
+
+License: MIT    
+"""
+import sys, os
+
+def _default_template():
+    """Returns a default set of lines to ignore"""
+    return ["*~", "*#", "*.pyc", "build", "_tmp"]
+
+def get_template():
+    """Tries to find a file to use as a template at sys.argv[2]"""
+    try:
+        tplfile = sys.argv[2]
+        with open(tplfile, 'rb') as fd:
+            lines = [line.strip() for line in fd.readlines()]
+        return lines
+
+    except:
+        return _default_template()
+
+def addignore(dirname):
+    """Adds the template to the directory as .gitignore
+
+    Args:
+      - dirname (string) a path to a directory.
+
+    Returns:
+      - True on success
+
+    Raises:
+      - AssertionError if not os.path.isdir(dirname)
+      - Possible OSErrors/IOErrors etc. from opening file
+    """
+    assert os.path.isdir(dirname)
+
+    gitignore = os.path.join(dirname, '.gitignore')
+    with open(gitignore, 'wb') as fd:
+        fd.writelines(os.linesep.join(get_template()))
+    return True
+    
+if __name__ == '__main__':
+    try:
+        fname = sys.argv[1]
+        quit(addignore(fname))
+
+    except IndexError:
+        print(__doc__)
+        print("Usage: %s <filename>"%(str(sys.argv[0])))
+        quit(1)
+
+    except AssertionError:
+        print("First parameter must be a directory")
+        quit(2)
+
+    
