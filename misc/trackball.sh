@@ -10,4 +10,7 @@ if [ ! -z "${PRESENT}" ]; then
     $SET_PROP "${DEVICE}" "Evdev Wheel Emulation Axes" 8 6 7 4 5
     $SET_PROP "${DEVICE}" "Evdev Wheel Emulation X Axis" 8 6
     $SET_PROP "${DEVICE}" "Evdev Drag Lock Buttons" 8 9
+    exit 0;
 fi
+
+exit 1;
