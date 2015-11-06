@@ -1,0 +1,81 @@
+#!/bin/bash
+## This file creates a '~/sketches' symlink that's rotated daily.
+##
+## Put it in cron:
+##     `@daily /usr/local/bin/coderotate`
+##
+## By default, errors are printed, verbose messages are not.
+##
+## Parameters:
+##    -v    Verbose
+##    -q    Quiet
+##
+## Variables:
+##    BaseDirectory   - Path to the folder in which daily directories
+##                      will be created.
+##    DirFMT          - Directory structure/date format
+##                      Default: ${BaseDirectory}/2015/Nov/05-Thu
+##    TodaysDirectory - The string created from $(date +"${DirFMT}")
+##
+##    LinkSrc         - The full path (BaseDirectory+TodaysDirectory)
+##
+##    LinkDst         - The path to the symlink. Currently ~/sketches
+##
+## Additionally, the `verbose` and `error` functions use ANSI color
+## codes. To disable permanently, remove the code between the 
+## ----- Cut here ------ blocks.
+## You can also run `export _CR_ANSI_COLOR="off"` before calling 
+## this script.
+
+BaseDirectory=$(readlink -f ~/code/daily)
+DirFMT="%Y/%b/%d-%a"
+TodaysDirectory=$(date +"${DirFMT}")
+LinkSrc="${BaseDirectory}/${TodaysDirectory}"
+LinkDst="~/sketches"
+
+VERBOSE=${1:-""}
+QUIET=${1:-""}
+_CR_ANSI_COLOR=${_CR_ANSI_COLOR:-"on"}
+CLR=""
+CYN=""
+RED=""
+## ----- Cut here ------
+if [ "${_CR_ANSI_COLOR}" == "on" ]; then
+    CLR="\033[0m"
+    CYN="\033[96m"
+    RED="\033[91m"
+fi
+## ----- Cut here ------
+function verbose() {
+    [ "${VERBOSE}" == "-v" ] && echo -e "${CYN} ${1} ${CLR}"
+}
+function error() {
+    [ "${QUIET}" != "-q" ] && echo -e "${RED} ${1} ${CLR}"
+}
+
+verbose "[+] Checking to see if ${LinkSrc} exists"
+# Exit 1 - Directory Exists, try again tomorrow
+if [ -d "${LinkSrc}" ]; then
+    error "Directory exists, try again tomorrow!"
+    exit 1;
+fi
+
+# Exit 2 - Couldn't remove symlink
+if [ -L "${LinkDst}" ]; then
+    verbose "[?] Trying to remove symlink: ${LinkDst}"
+    rm "${LinkDst}" || exit 2;
+fi
+
+verbose "[+] Symlink gone, create today's directory: ${LinkSrc}"
+mkdir -p "${LinkSrc}"
+
+# Exit 3 - Couldn't create daily directory
+if [ ! -d "${LinkSrc}" ]; then
+    error "Failed to create ${LinkSrc}"
+    exit 3;
+fi
+
+verbose "[+] Creating new symlink"
+verbose "  [${LinkSrc}] --> [${LinkDst}] "
+ln -s "${LinkSrc}" "${LinkDst}"
+exit 0;

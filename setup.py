@@ -1,5 +1,8 @@
 #!/usr/bin/env python
-from setuptools import setup
+try:
+    from setuptools import setup
+except ImportError:
+    print("Install python-setuptools: sudo apt-get install python-setuptools")
 """
 If you only want to install some of the scripts, you can manually copy them
 to the /bin/ or /usr/bin directory and make them executable (chmod +x).
@@ -13,7 +16,8 @@ scripts = [
     #'bin/mint-post-install',
     'bin/whoamiv',
     'bin/cleanhosts',
-    'bin/alphabetize'
+    'bin/alphabetize',
+    'bin/coderotate'
     ]
 
 config = {

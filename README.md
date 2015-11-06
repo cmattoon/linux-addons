@@ -10,3 +10,5 @@ Scripts
  * `icanhazip` - Displays your external IP address.
  * `wifipassword` - Prints a table of known access points and passwords.
  * `whoamiv` - Verbose 'whoami' script (includes IP addresses)
+ * `coderotate` - Keeps daily folders of snippets in `~/sketches/`
+ 
